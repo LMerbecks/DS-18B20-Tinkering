@@ -1,6 +1,12 @@
 #include <Arduino.h>
 #include <OneWire.h>
 
+/// @brief Converts a 16 bit word with decimal seperator after 4th bit into float celcius temperature by shifting decimal position
+/// @param bitData word with temperaure data
+/// @return temperature in Celsius
+float convertWordToCelsiusTemperature(int16_t bitData);
+
+
 OneWire sensorBus(D0);
 
 
@@ -16,6 +22,7 @@ void loop() {
   byte addr[8];
   float celsius, fahrenheit;
   
+
   if ( !sensorBus.search(addr)) {
     Serial.println("No more addresses.");
     Serial.println();
@@ -97,7 +104,7 @@ void loop() {
     else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
     //// default is 12 bit resolution, 750 ms conversion time
   }
-  celsius = (float)raw / 16.0;
+  celsius = convertWordToCelsiusTemperature(raw);
   fahrenheit = celsius * 1.8 + 32.0;
   Serial.print("  Temperature = ");
   Serial.print(celsius);
@@ -106,7 +113,7 @@ void loop() {
   Serial.println(" Fahrenheit");
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
-}
+float convertWordToCelsiusTemperature(int16_t bitData){
+  float temperatureCelsius = (float)bitData / 16.0; 
+  return temperatureCelsius;
+};
